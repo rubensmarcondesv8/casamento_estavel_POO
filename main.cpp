@@ -1,65 +1,111 @@
 #include <iostream>
-#include <cstdio>
-#include <queue>
-#include <string.h>
+#include <vector>
+#include "Pessoa.hpp"
+#include "Posto.hpp"
+#include "Localizacao.hpp"
 
 using namespace std;
 
-int ranking[505][505]; // Ranking gives the ranking of each man in the preference list of each woman
-int man_pref[505][505]; // man's preference list
-int woman_pref[505][505]; // woman's preference list
-int proximo[505]; // which woman will be proposed for each man
-int matches[505]; // the current engagement of each woman
+void bubbleSortPessoa(vector<Pessoa> vp, unsigned* lista, unsigned n)
+{
+    unsigned aux;
+    for (unsigned k = 0; k < n; k++)
+    {
+        lista[k] = vp[k].getIdPessoa();
+    }
+    for (unsigned i = 0; i < n - 1; i++)
+    {
+        for (unsigned j = i + 1; j < n; j++)
+        {
+            if(vp[lista[i]].getIdade() < vp[lista[j]].getIdade())
+            {
+                aux = lista[i];
+                lista[i] = lista[j];
+                lista[j] = aux;
+            } else if(vp[lista[i]].getIdade() == vp[lista[j]].getIdade())
+            {
+                if(vp[lista[i]].getIdPessoa() > vp[lista[j]].getIdPessoa())
+                {
+                    aux = lista[i];
+                    lista[i] = lista[j];
+                    lista[j] = aux;
+                }
+            }
+        }
+    }
+}
 
-int main(){
-	queue<int> freeMen;
-	int count , i , j ,w , m , current_woman , current_man;
-	scanf("%d" , &count);
-	for(i=1;i<=count;i++){
-		scanf("%d" , &w);
-		for(j=1 ; j <=count ; j++){
-			scanf("%d" , &woman_pref[w][j]);
-		}
-	} // initialize the preference list of woman
+int main(int argc, char const *argv[])
+{
+    unsigned int numeroPessoas = 0;
+    unsigned int numeroPostos = 0;
+    vector<Posto> arrayPostos;
+    vector<Pessoa> arrayPessoas;
+    unsigned int aux = 0;
+    double temp1 = 0;
+    double temp2 = 0;
 
-	for(i=1;i<=count;i++){
-		scanf("%d" , &m);
-		for(j=1 ; j <=count ; j++){
-			scanf("%d" , &man_pref[m][j]);
-		}
-	} // initialize the preference list of man
+    cin >> numeroPostos;
+    for (unsigned int j = 0; j < numeroPostos; j++)
+    {
+        Posto posto;
+        posto.setIdPosto(j);
+        cin >> aux;
+        posto.setLimitePessoas(aux);
+        cin >> temp1;
+        cin >> temp2;
+        Localizacao coordenadasPosto(temp1, temp2);
+        posto.setLocalPosto(coordenadasPosto);
+        arrayPostos.push_back(posto);
+    }
 
-	for(i=1;i<=count;i++)
-		for(j=1;j<=count;j++)
-			ranking[i][woman_pref[i][j]] = j; // initialize ranking
+    cin >> numeroPessoas;
+    for(unsigned int k = 0; k < numeroPessoas; k++)
+    {
+        Pessoa pessoa;
+        pessoa.setIdPessoa(k);
+        cin >> aux;
+        pessoa.setIdade(aux);
+        cin >> temp1;
+        cin >> temp2;
+        Localizacao coordenadasPessoa(temp1, temp2);
+        pessoa.setLocalPessoa(coordenadasPessoa);
+        arrayPessoas.push_back(pessoa);
+    }
 
-	memset(matches , 0 , (count+1)*sizeof(int));
+    unsigned pessoasMaisVelhasId[numeroPessoas];
+    bubbleSortPessoa(arrayPessoas, pessoasMaisVelhasId, numeroPessoas);
 
-	for(i=1;i<=count;i++){
-		freeMen.push(i);
-		proximo[i] = 1;
-	}
+    unsigned int vagas = 0;
+    for (unsigned int i = 0; i < numeroPostos; i++)
+    {
+        vagas = vagas + arrayPostos[i].getLimitePessoas();
+    }
 
-	while(!freeMen.empty()){
-		current_man = freeMen.front();
-		current_woman = man_pref[current_man][proximo[current_man]];
+    if(vagas < numeroPessoas)
+    {
+        
+    }
+    
+    if(vagas == numeroPessoas)
+    {
 
-		if(matches[current_woman] == 0){
-			matches[current_woman] = current_man;
-			freeMen.pop();
-		}
-		else if(ranking[current_woman][current_man] < ranking[current_woman][matches[current_woman]]){
-			int ex_man = matches[current_woman];
-			freeMen.pop();
-			matches[current_woman] = current_man;
-			freeMen.push(ex_man);
-		}
+    }
 
-		proximo[current_man]++;
-	}
+    if(vagas > numeroPessoas)
+    {
+        
+    }
 
-	for(i = 1 ; i <= count ; i++){
-		printf("man : %d , woman : %d get married!\n" , matches[i] , i);
-	}
-
+    for (unsigned int j = 0; j < numeroPostos; j++)
+    {
+        cout << "(" << arrayPostos[j].getIdPosto() << ")" << endl;
+        for (unsigned int k = 0; k < arrayPostos[j].getLimitePessoas(); k++)
+        {
+            cout << arrayPostos[j].getPessoasAgendadas()[k].getIdPessoa();
+        }
+        cout << endl;
+    }
+    
+    return 0;
 }
