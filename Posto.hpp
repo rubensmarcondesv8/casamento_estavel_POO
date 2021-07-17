@@ -1,9 +1,7 @@
-#ifndef POSTO
-#define POSTO
+#ifndef POSTO_H
+#define POSTO_H
 
-#include "Pessoa.hpp"
 #include "Localizacao.hpp"
-#include <vector>
 
 using namespace std;
 
@@ -12,23 +10,17 @@ class Posto
     private:
         unsigned int idPosto;
         unsigned int limitePessoas;
-        unsigned int idProximaPessoa;
         Localizacao localPosto;
-        vector<Pessoa> pessoasAgendadas;
 
     public:
         Posto();
-        ~Posto();
-        unsigned int getIdPosto();
-        void setIdPosto(unsigned int id);
-        unsigned int getLimitePessoas();
-        void setLimitePessoas(unsigned int limite);
-        Localizacao getLocalPosto();
-        void setLocalPosto(Localizacao local);
-        vector<Pessoa> getPessoasAgendadas();
-        void setPessoasAgendadas(Pessoa p);
-        unsigned int getIdProximaPessoa();
-        void setIdProximaPessoa(unsigned int valor);
+        Posto(unsigned int id, 
+                unsigned int qtdeVagas, 
+                Localizacao local) : idPosto(id), limitePessoas(qtdeVagas), localPosto(local) {};
+
+        unsigned int getIdPosto() const {return idPosto;}
+        unsigned int getLimitePessoas() {return limitePessoas;}
+        Localizacao getLocalPosto() {return localPosto;}
 };
 
 #endif

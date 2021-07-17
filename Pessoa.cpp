@@ -1,59 +1,22 @@
-#include <vector>
 #include <math.h>
 #include "Localizacao.hpp"
 #include "Pessoa.hpp"
 
 using namespace std;
 
-Pessoa::Pessoa()
+Pessoa::Pessoa(){
+    this->livre = true;
+}
+
+Pessoa::Pessoa(unsigned int id, unsigned int _idade, Localizacao local)
 {
-    this->idPessoa = 0;
-    this->idade = 0;
-    this->distanciaPostoAtual = 0;
+    this->idPessoa = id;
+    this->idade = _idade;
+    this->localPessoa = local;
     this->livre = true;
 }
 
 Pessoa::~Pessoa(){}
-
-void Pessoa::setIdPessoa(unsigned int id)
-{
-    this->idPessoa = id;
-}
-
-unsigned int Pessoa::getIdPessoa()
-{
-    return this->idPessoa;
-}
-
-void Pessoa::setIdade(unsigned int idade)
-{
-    this->idade = idade;
-}
-
-unsigned int Pessoa::getIdade()
-{
-    return this->idade;
-}
-
-void Pessoa::setLocalPessoa(Localizacao local)
-{
-    this->localPessoa = local;
-}
-
-Localizacao Pessoa::getLocalPessoa()
-{
-    return this->localPessoa;
-}
-
-double Pessoa::getDistanciaPostoAtual()
-{
-    return this->distanciaPostoAtual;
-}
-
-void Pessoa::setDistanciaPostoAtual(double distancia)
-{
-    this->distanciaPostoAtual = distancia;
-}
 
 void Pessoa::setLivre(bool _livre)
 {
@@ -64,13 +27,24 @@ bool Pessoa::isLivre()
     return this->livre;
 }
 
-unsigned int Pessoa::getIdPostoAtual()
+unsigned int Pessoa::getIdPessoa()
 {
-    return this->idPostoAtual;
+    return this->idPessoa;
 }
-void Pessoa::setIdPostoAtual(unsigned int id)
+
+unsigned int Pessoa::getIdVagaAtual()
 {
-    this->idPostoAtual = id;
+    return this->idVagaAtual;
+}
+
+void Pessoa::setIdVagaAtual(unsigned int idV)
+{
+    this->idVagaAtual = idV;
+}
+
+unsigned int Pessoa::getIdade()
+{
+    return this->idade;
 }
 
 double Pessoa::calculaDistancia(Localizacao localPosto)

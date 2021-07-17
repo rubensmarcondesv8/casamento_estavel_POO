@@ -1,8 +1,8 @@
 #ifndef PESSOA
 #define PESSOA
 
-#include <vector>
 #include "Localizacao.hpp"
+#include <vector>
 
 using namespace std;
 
@@ -12,25 +12,21 @@ class Pessoa
         unsigned int idPessoa;
         unsigned int idade;
         Localizacao localPessoa;
-        double distanciaPostoAtual;
         bool livre = true;
-        unsigned int idPostoAtual;
+        unsigned idVagaAtual;
     
     public:
         Pessoa();
+        Pessoa(unsigned int id, unsigned int _idade, Localizacao local);
         ~Pessoa();
-        void setIdPessoa(unsigned int id);
-        unsigned int getIdPessoa();
-        void setIdade(unsigned int idade);
         unsigned int getIdade();
-        void setLocalPessoa(Localizacao local);
-        Localizacao getLocalPessoa();
         double getDistanciaPostoAtual();
         void setDistanciaPostoAtual(double distancia);
         void setLivre(bool _livre);
         bool isLivre();
-        unsigned int getIdPostoAtual();
-        void setIdPostoAtual(unsigned int id);
+        unsigned int getIdPessoa();
+        unsigned int getIdVagaAtual();
+        void setIdVagaAtual(unsigned int idV);
 
         double calculaDistancia(Localizacao localPosto);
 };

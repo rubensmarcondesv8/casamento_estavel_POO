@@ -3,109 +3,129 @@
 #include "Pessoa.hpp"
 #include "Posto.hpp"
 #include "Localizacao.hpp"
+#include "Vaga.hpp"
+#include <algorithm>
 
 using namespace std;
 
-void bubbleSortPessoa(vector<Pessoa> vp, unsigned* lista, unsigned n)
+bool comparaIdade(Pessoa primeiro, Pessoa segundo)
 {
-    unsigned aux;
-    for (unsigned k = 0; k < n; k++)
-    {
-        lista[k] = vp[k].getIdPessoa();
-    }
-    for (unsigned i = 0; i < n - 1; i++)
-    {
-        for (unsigned j = i + 1; j < n; j++)
-        {
-            if(vp[lista[i]].getIdade() < vp[lista[j]].getIdade())
-            {
-                aux = lista[i];
-                lista[i] = lista[j];
-                lista[j] = aux;
-            } else if(vp[lista[i]].getIdade() == vp[lista[j]].getIdade())
-            {
-                if(vp[lista[i]].getIdPessoa() > vp[lista[j]].getIdPessoa())
-                {
-                    aux = lista[i];
-                    lista[i] = lista[j];
-                    lista[j] = aux;
-                }
-            }
-        }
-    }
+    if (primeiro.getIdade() < segundo.getIdade())
+        return true;
+    else
+        return false;
 }
 
 int main(int argc, char const *argv[])
 {
-    unsigned int numeroPessoas = 0;
-    unsigned int numeroPostos = 0;
-    vector<Posto> arrayPostos;
-    vector<Pessoa> arrayPessoas;
-    unsigned int aux = 0;
-    double temp1 = 0;
-    double temp2 = 0;
+    unsigned numeroPessoas = 0;
+    unsigned numeroPostos = 0;
+    unsigned numeroVagas = 0;
+    vector<Posto> vetorPostos;
+    vector<Vaga> vetorVagas;
+    vector<Pessoa> vetorPessoas;
 
     cin >> numeroPostos;
     for (unsigned int j = 0; j < numeroPostos; j++)
     {
-        Posto posto;
-        posto.setIdPosto(j);
-        cin >> aux;
-        posto.setLimitePessoas(aux);
-        cin >> temp1;
-        cin >> temp2;
-        Localizacao coordenadasPosto(temp1, temp2);
-        posto.setLocalPosto(coordenadasPosto);
-        arrayPostos.push_back(posto);
+        unsigned int a, b, c;
+        cin >> a;
+        cin >> b;
+        cin >> c;
+        Localizacao l(b, c);
+        Posto posto(j, a, l);
+        vetorPostos.push_back(posto);
+        for (unsigned int k = 0; k < posto.getLimitePessoas(); k++)
+        {
+            Vaga v(j, posto.getLocalPosto());
+            vetorVagas.push_back(v);
+            numeroVagas++;
+        }
     }
 
     cin >> numeroPessoas;
-    for(unsigned int k = 0; k < numeroPessoas; k++)
+    for (unsigned int k = 0; k < numeroPessoas; k++)
     {
-        Pessoa pessoa;
-        pessoa.setIdPessoa(k);
-        cin >> aux;
-        pessoa.setIdade(aux);
-        cin >> temp1;
-        cin >> temp2;
-        Localizacao coordenadasPessoa(temp1, temp2);
-        pessoa.setLocalPessoa(coordenadasPessoa);
-        arrayPessoas.push_back(pessoa);
+        unsigned a, b, c;
+        cin >> a;
+        cin >> b;
+        cin >> c;
+        Localizacao l(b, c);
+        Pessoa pessoa(k, a, l);
+        vetorPessoas.push_back(pessoa);
     }
 
-    unsigned pessoasMaisVelhasId[numeroPessoas];
-    bubbleSortPessoa(arrayPessoas, pessoasMaisVelhasId, numeroPessoas);
-
-    unsigned int vagas = 0;
-    for (unsigned int i = 0; i < numeroPostos; i++)
+    sort(vetorPessoas.begin(), vetorPessoas.end(), comparaIdade);
+    vector<unsigned int> preferenciaPostoIdPessoa;
+    for (unsigned int i = 0; i < vetorPessoas.size(); i++)
     {
-        vagas = vagas + arrayPostos[i].getLimitePessoas();
+        preferenciaPostoIdPessoa.push_back(vetorPessoas[i].getIdPessoa());
     }
 
-    if(vagas < numeroPessoas)
-    {
-        
-    }
-    
-    if(vagas == numeroPessoas)
-    {
+    vector<double> matrizPreferenciaPessoaDistancia[numeroPessoas];
 
-    }
-
-    if(vagas > numeroPessoas)
+    for (unsigned int k = 0; k < numeroPessoas; k++)
     {
-        
-    }
-
-    for (unsigned int j = 0; j < numeroPostos; j++)
-    {
-        cout << "(" << arrayPostos[j].getIdPosto() << ")" << endl;
-        for (unsigned int k = 0; k < arrayPostos[j].getLimitePessoas(); k++)
+        for (unsigned int m = 0; m < vetorVagas.size(); m++)
         {
-            cout << arrayPostos[j].getPessoasAgendadas()[k].getIdPessoa();
+            matrizPreferenciaPessoaDistancia[k].push_back(vetorPessoas[k].calculaDistancia(vetorVagas[m].getLocalVaga()));
         }
-        cout << endl;
     }
-    
+
+//FALTA IMPLEMENTAR O PROX PESSOA A RECEBER PROPOSTA DA VAGA
+
+    if (numeroVagas < numeroPessoas)
+    {
+        unsigned int i = 0, j = 0;
+        while (numeroVagas > 0)
+        {
+            if (!vetorVagas[i].isOcupada() && vetorPessoas[j].isLivre())
+            {
+                vetorVagas[i].setIdPessoaVaga(j);
+                vetorPessoas[j].setIdVagaAtual(i);
+                vetorVagas[i].setOcupada(true);
+                i++;
+                numeroVagas--;
+            }
+            if (!vetorVagas[i].isOcupada() &&
+                matrizPreferenciaPessoaDistancia[j][i] <
+                    matrizPreferenciaPessoaDistancia[j][vetorPessoas[j].getIdVagaAtual()])
+            {
+                vetorVagas[i].setOcupada(true);
+                vetorVagas[vetorPessoas[j].getIdVagaAtual()].setOcupada(false);
+                vetorVagas[i].setIdPessoaVaga(j);
+                vetorPessoas[j].setIdVagaAtual(i);
+                i++;
+            }
+            else if (!vetorVagas[i].isOcupada() &&
+                     matrizPreferenciaPessoaDistancia[j][i] ==
+                         matrizPreferenciaPessoaDistancia[j][vetorPessoas[j].getIdVagaAtual()] &&
+                     i > vetorPessoas[j].getIdVagaAtual())
+            {
+                vetorVagas[i].setOcupada(true);
+                vetorVagas[vetorPessoas[j].getIdVagaAtual()].setOcupada(false);
+                vetorVagas[i].setIdPessoaVaga(j);
+                vetorPessoas[j].setIdVagaAtual(i);
+            }
+        }
+    }
+
+    unsigned int aux = 0;
+    for (unsigned int i = 0; i < vetorPostos.size(); i++)
+    {
+        cout << vetorPostos[i].getIdPosto() << endl;
+        for (unsigned int j = aux; j < vetorVagas.size(); j++)
+        {
+            if(i == vetorVagas[j].getIdPostoVaga())
+            {
+                cout << vetorVagas[j].getIdPessoaVaga() << " ";
+            } else
+            {
+                aux = j;
+                break;
+            }
+        }
+    }
+
     return 0;
 }
